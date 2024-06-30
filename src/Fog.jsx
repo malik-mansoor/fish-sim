@@ -8,8 +8,10 @@ export default function Fog() {
 	const { camera } = useThree();
 
 	useFrame(() => {
-		if (camera.position.y < 350) {
+		if (camera.position.y < 352) {
 			setColor("#009ec1");
+		} else {
+			setColor("#87CEEB");
 		}
 	});
 

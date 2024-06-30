@@ -12,8 +12,8 @@ const fragmentShader = /* glsl */ `
 
         float vignette = pow(smoothstep(0., 1.0, distance), 2.);
 
-        float r = 1. - 0.8 * darkness;
-        float g = 1. - 0.5 * darkness;
+        float r = 1. - 0.6 * darkness;
+        float g = 1. - 0.4 * darkness;
         
         color.rgb *= (1. - vignette * (0.5 + darkness))  * vec3(r, g, 1.); 
 

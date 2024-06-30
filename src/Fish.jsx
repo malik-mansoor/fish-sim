@@ -69,11 +69,6 @@ export default function Fish() {
 	});
 
 	useEffect(() => {
-		console.log("Parameters updated:", {
-			neighborhoodRadius,
-			maxSpeed,
-			maxSteerForce,
-		});
 		boids.forEach((groupBoids) => {
 			groupBoids.forEach((boid) => {
 				boid._neighborhoodRadius = neighborhoodRadius;
