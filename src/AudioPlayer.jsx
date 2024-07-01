@@ -19,39 +19,61 @@ function useAudio(src, loop = false) {
 }
 
 export default function AudioPlayer({ started, loaded }) {
+	console.log("AudioPlayer started");
 	const { camera } = useThree();
 
-	const underwater = useAudio("./sounds/underwater.mp3", true);
-	const ocean = useAudio("./sounds/ocean.mp3", true);
-	const submerge = useAudio("./sounds/submerge.mp3");
+	const underWaterRef = useRef(null);
+	const oceanRef = useRef(null);
+	const submergeRef = useRef(null);
 
 	const underWaterPlaying = useRef(false);
 	const oceanPlaying = useRef(false);
 	const submergePlaying = useRef(false);
 
+	useEffect(() => {
+		const underwater = new Audio("./sounds/underwater.mp3");
+		const ocean = new Audio("./sounds/ocean.mp3");
+		const submerge = new Audio("./sounds/submerge.mp3");
+
+		underwater.loop = true;
+		ocean.loop = true;
+		submerge.loop = false;
+
+		underWaterRef.current = underwater;
+		oceanRef.current = ocean;
+		submergeRef.current = submerge;
+
+		return () => {
+			underwater.pause();
+			ocean.pause();
+			submerge.pause();
+		};
+	}, []);
+
 	useFrame(() => {
 		if (loaded) {
 			if (camera.position.y < 350) {
 				if (!underWaterPlaying.current) {
-					underwater.current.play();
+					underWaterRef.current.play();
 					underWaterPlaying.current = true;
-					ocean.current.pause();
+					oceanRef.current.pause();
 					oceanPlaying.current = false;
 				}
 			} else {
 				if (!oceanPlaying.current) {
-					ocean.current.play();
+					oceanRef.current.play();
 					oceanPlaying.current = true;
-					underwater.current.pause();
+					underWaterRef.current.pause();
 					underWaterPlaying.current = false;
 				}
 			}
 			if (camera.position.y < 365 && camera.position.y > 350) {
-				if (!submergeRef.current.isPlaying) {
+				if (!submergePlaying.current) {
 					submergeRef.current.play();
+					submergePlaying.current = true;
 				}
 			} else {
-				submergePlaying.current = false;
+				submergePlaying.current = false; // Reset so it can play again next time
 			}
 		}
 	});

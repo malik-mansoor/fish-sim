@@ -17,7 +17,6 @@ const fragmentShader = /* glsl */ `
         
         color.rgb *= (1. - vignette * (0.5 + darkness))  * vec3(r, g, 1.); 
 
-
         outputColor = color;
     }
 `;

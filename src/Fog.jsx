@@ -1,17 +1,17 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 export default function Fog() {
-	// const color = "#009ec1";
-	const [color, setColor] = useState("#87CEEB");
-
+	const initialColor = "#87CEEB";
 	const { camera } = useThree();
+	const [color, setColor] = useState(initialColor);
+	const previousColor = useRef(initialColor);
 
 	useFrame(() => {
-		if (camera.position.y < 352) {
-			setColor("#009ec1");
-		} else {
-			setColor("#87CEEB");
+		const newColor = camera.position.y < 352 ? "#009ec1" : initialColor;
+		if (previousColor.current !== newColor) {
+			previousColor.current = newColor;
+			setColor(newColor);
 		}
 	});
 

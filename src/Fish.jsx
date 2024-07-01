@@ -2,12 +2,10 @@ import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import React, { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { OBJLoader } from "three/examples/jsm/Addons.js";
-
-import Boid from "./utils/Boid";
-
 import vertexShader from "./shaders/fish/vertex.glsl";
 import fragmentShader from "./shaders/fish/fragment.glsl";
 import { useControls } from "leva";
+import Boid from "./utils/Boid";
 
 const objPaths = [];
 const texturePaths = [];
@@ -25,6 +23,7 @@ export default function Fish() {
 	const objs = useLoader(OBJLoader, objPaths);
 	const textures = useLoader(THREE.TextureLoader, texturePaths);
 
+	const fish = useRef([]);
 	const boids = useMemo(() => {
 		const boids = [];
 		let boidArr;
@@ -64,7 +63,7 @@ export default function Fish() {
 
 	const { neighborhoodRadius, maxSpeed, maxSteerForce } = useControls("Fish", {
 		neighborhoodRadius: { value: 250, min: 0, max: 500 },
-		maxSpeed: { value: 1, min: 0, max: 10 },
+		maxSpeed: { value: 1.2, min: 0, max: 10 },
 		maxSteerForce: { value: 0.04, min: 0, max: 1 },
 	});
 
@@ -80,6 +79,20 @@ export default function Fish() {
 	}, [neighborhoodRadius, maxSpeed, maxSteerForce]);
 
 	useEffect(() => {
+		boids.forEach((group, groupIndex) => {
+			group.forEach((boid, i) => {
+				const matrix = new THREE.Matrix4();
+
+				matrix.compose(
+					new THREE.Vector3(boid.position.x, boid.position.y, boid.position.z),
+					new THREE.Quaternion(),
+					new THREE.Vector3(0.08, 0.08, 0.08)
+				);
+
+				fish.current[groupIndex].setMatrixAt(i, matrix);
+			});
+		});
+
 		window.addEventListener("mousemove", handleMouseMove, false);
 
 		return () => {
@@ -88,34 +101,51 @@ export default function Fish() {
 	}, []);
 
 	useFrame(({ clock }, delta) => {
-		if (groupRef.current) {
-			groupRef.current.children.forEach((group, groupIndex) => {
-				group.children.forEach((fish, i) => {
-					const groupBoids = boids[groupIndex];
-					const otherBoids = boids.filter((_, i) => i !== groupIndex).flat();
+		boids.forEach((group, groupIndex) => {
+			group.forEach((boid, i) => {
+				const groupBoids = group;
+				const otherBoids = boids.filter((_, i) => i !== groupIndex).flat();
 
-					const boid = groupBoids[i];
+				const effectiveDelta = Math.min(0.1, delta) / 0.008;
+				boid.run(groupBoids, otherBoids, effectiveDelta);
 
-					const effectiveDelta = Math.min(0.1, delta) / 0.008;
-					boid.run(groupBoids, otherBoids, effectiveDelta);
+				uniforms.uTime.value = clock.elapsedTime;
 
-					uniforms.uTime.value = clock.elapsedTime;
+				let matrix = new THREE.Matrix4();
+				fish.current[groupIndex].getMatrixAt(i, matrix);
+				let position = new THREE.Vector3();
+				let quaternion = new THREE.Quaternion();
+				let scale = new THREE.Vector3();
 
-					fish.position.copy(boid.position);
+				matrix.decompose(position, quaternion, scale);
 
-					const target = new THREE.Vector3(
-						fish.position.x + boid.velocity.x,
-						fish.position.y + boid.velocity.y,
-						fish.position.z + boid.velocity.z
-					);
-					fish.lookAt(target);
-				});
+				position.set(boid.position.x, boid.position.y, boid.position.z);
+
+				const target = new THREE.Vector3(
+					boid.position.x - boid.velocity.x,
+					boid.position.y - boid.velocity.y,
+					boid.position.z - boid.velocity.z
+				);
+
+				// Compute direction from boid position to target
+				let direction = new THREE.Vector3();
+				direction.subVectors(target, boid.position).normalize();
+
+				// Create a rotation matrix to orient the object towards the target
+				let matrixx = new THREE.Matrix4();
+				matrixx.lookAt(boid.position, target, new THREE.Vector3(0, 1, 0)); // Assuming up direction is positive y-axis
+
+				// Extract the rotation component from the matrix as a quaternion
+				quaternion.setFromRotationMatrix(matrixx);
+
+				matrix.compose(position, quaternion, scale);
+				fish.current[groupIndex].setMatrixAt(i, matrix);
 			});
-		}
+			fish.current[groupIndex].instanceMatrix.needsUpdate = true;
+		});
 	});
 
-	const { camera, size } = useThree();
-	const raycaster = useRef(new THREE.Raycaster());
+	const { camera } = useThree();
 	const handleMouseMove = (event) => {
 		const raycaster = new THREE.Raycaster();
 		const mouse = new THREE.Vector2();
@@ -147,26 +177,23 @@ export default function Fish() {
 	return (
 		<>
 			<group ref={groupRef}>
-				{[...Array(groupCount)].map((_, groupIndex) => (
-					<group key={groupIndex}>
-						{[...Array(count)].map((_, i) => (
-							<mesh
-								key={i}
-								geometry={objs[groupIndex].children[0].geometry}
-								scale={0.08}
-							>
-								<shaderMaterial
-									vertexShader={vertexShader}
-									fragmentShader={fragmentShader}
-									uniforms={{
-										...uniforms,
-										uShift: { value: i },
-										uTexture: { value: textures[groupIndex] },
-									}}
-								/>
-							</mesh>
-						))}
-					</group>
+				{[...Array(groupCount)].map((_, i) => (
+					<instancedMesh
+						ref={(el) => (fish.current[i] = el)}
+						args={[null, null, count]}
+						geometry={objs[i].children[0].geometry}
+						key={i}
+					>
+						<shaderMaterial
+							vertexShader={vertexShader}
+							fragmentShader={fragmentShader}
+							uniforms={{
+								...uniforms,
+								uShift: { value: i },
+								uTexture: { value: textures[i] },
+							}}
+						/>
+					</instancedMesh>
 				))}
 			</group>
 		</>

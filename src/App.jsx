@@ -20,7 +20,7 @@ export default function App() {
 
 	return (
 		<>
-			<Canvas camera={{ position: [0, 0, 200], fov: 75, far: 10000 }}>
+			<Canvas camera={{ position: [0, 400, 600], fov: 75, far: 10000 }}>
 				<Suspense fallback={null}>
 					<Experience started={started} loaded={loaded} />
 				</Suspense>
@@ -28,12 +28,9 @@ export default function App() {
 
 			<Leva collapsed hidden={!showLeva} />
 
-			<Loader
-				started={started}
-				setStarted={setStarted}
-				loaded={loaded}
-				setLoaded={setLoaded}
-			/>
+			{!started && (
+				<Loader setStarted={setStarted} loaded={loaded} setLoaded={setLoaded} />
+			)}
 		</>
 	);
 }

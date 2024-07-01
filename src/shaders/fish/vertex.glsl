@@ -18,7 +18,10 @@ void main() {
 
     vec3 transformed = vec3(x, position.y, z);
    
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+    // Apply the instance matrix to the transformed position
+    vec4 worldPosition = instanceMatrix * vec4(transformed, 1.0);
+   
+    gl_Position = projectionMatrix * modelViewMatrix * worldPosition;
 
     vUv = uv;
 }
