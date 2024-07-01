@@ -19,7 +19,6 @@ function useAudio(src, loop = false) {
 }
 
 export default function AudioPlayer({ started, loaded }) {
-	console.log("AudioPlayer started");
 	const { camera } = useThree();
 
 	const underWaterRef = useRef(null);

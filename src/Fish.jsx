@@ -17,7 +17,7 @@ for (let i = 1; i <= 15; i++) {
 
 export default function Fish() {
 	const groupCount = 15;
-	const count = 10;
+	const count = 8;
 	const groupRef = useRef();
 
 	const objs = useLoader(OBJLoader, objPaths);
@@ -62,9 +62,14 @@ export default function Fish() {
 	);
 
 	const { neighborhoodRadius, maxSpeed, maxSteerForce } = useControls("Fish", {
-		neighborhoodRadius: { value: 250, min: 0, max: 500 },
-		maxSpeed: { value: 1.2, min: 0, max: 10 },
-		maxSteerForce: { value: 0.04, min: 0, max: 1 },
+		neighborhoodRadius: {
+			value: 250,
+			min: 0,
+			max: 500,
+			label: "Neighborhood Radius",
+		},
+		maxSpeed: { value: 1.1, min: 0, max: 10, label: "Max Speed" },
+		maxSteerForce: { value: 0.04, min: 0, max: 1, label: "Max Steer Force" },
 	});
 
 	useEffect(() => {
@@ -83,10 +88,12 @@ export default function Fish() {
 			group.forEach((boid, i) => {
 				const matrix = new THREE.Matrix4();
 
+				const randomScale = (Math.random() - 0.5) * 0.02 + 0.08;
+
 				matrix.compose(
 					new THREE.Vector3(boid.position.x, boid.position.y, boid.position.z),
 					new THREE.Quaternion(),
-					new THREE.Vector3(0.08, 0.08, 0.08)
+					new THREE.Vector3(randomScale, randomScale, randomScale)
 				);
 
 				fish.current[groupIndex].setMatrixAt(i, matrix);

@@ -16,8 +16,6 @@ import AudioPlayer from "./AudioPlayer";
 import CameraEffect from "./CameraEffect";
 
 export default function Experience({ started, loaded }) {
-	console.log("Experience started");
-
 	const [debug, setDebug] = useState(false);
 	const [darkness, setDarkness] = useState(0);
 
@@ -29,7 +27,7 @@ export default function Experience({ started, loaded }) {
 
 	return (
 		<>
-			<Perf position="top-left" />
+			{/* <Perf position="top-left" /> */}
 
 			<EffectComposer>
 				<Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} height={500} />
@@ -39,7 +37,7 @@ export default function Experience({ started, loaded }) {
 
 			<color attach="background" args={["#007590"]} />
 
-			<ambientLight intensity={5} />
+			<ambientLight intensity={8} />
 
 			<Fog />
 

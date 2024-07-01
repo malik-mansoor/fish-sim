@@ -9,7 +9,7 @@ class Boid {
 		this._height = 500;
 		this._depth = 200;
 		this._neighborhoodRadius = 250;
-		this._maxSpeed = 1.2;
+		this._maxSpeed = 1.1;
 		this._maxSteerForce = 0.04;
 		this._avoidWalls = true;
 	}

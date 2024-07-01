@@ -18,7 +18,7 @@ export default function Loader({ setStarted, setLoaded }) {
 				...prevState,
 				showDiveButton: true,
 			}));
-		}, 6000);
+		}, 5000);
 	};
 
 	const handleStarted = () => {

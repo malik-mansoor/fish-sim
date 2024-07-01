@@ -5,8 +5,6 @@ const easeInOutCubic = (t) =>
 	t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
 export default function CameraEffect({ started, darkness, setDarkness }) {
-	console.log("CameraEffect started");
-
 	const { camera } = useThree();
 
 	const [y, setY] = useState(400);
@@ -41,7 +39,6 @@ export default function CameraEffect({ started, darkness, setDarkness }) {
 			}
 
 			if (camera.position.y < 351 && darkness !== 1) {
-				console.log("darkness", darkness);
 				setDarkness(1);
 			}
 		}
