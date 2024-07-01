@@ -47,9 +47,8 @@ export default function AudioPlayer({ started, loaded }) {
 				}
 			}
 			if (camera.position.y < 365 && camera.position.y > 350) {
-				if (!submergePlaying.current) {
-					submerge.current.play();
-					submergePlaying.current = true;
+				if (!submergeRef.current.isPlaying) {
+					submergeRef.current.play();
 				}
 			} else {
 				submergePlaying.current = false;

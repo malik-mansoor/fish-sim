@@ -76,6 +76,7 @@ export default function Fish() {
 				boid._maxSteerForce = maxSteerForce;
 			});
 		});
+		uniforms.uSpeed.value = maxSpeed * 3;
 	}, [neighborhoodRadius, maxSpeed, maxSteerForce]);
 
 	useEffect(() => {
@@ -152,7 +153,7 @@ export default function Fish() {
 							<mesh
 								key={i}
 								geometry={objs[groupIndex].children[0].geometry}
-								scale={0.1}
+								scale={0.08}
 							>
 								<shaderMaterial
 									vertexShader={vertexShader}

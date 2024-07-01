@@ -16,7 +16,7 @@ void main() {
     float alpha = min(c, c1);
 
 	float fadeX = 1.-smoothstep(0., 7.5, abs(vWorldPosition.x));
-	float fadeY = 1.-smoothstep(0., 5., abs(vWorldPosition.y - 2.));
+	float fadeY = 1.-smoothstep(0., 4., abs(vWorldPosition.y - 2.));
     float fade = fadeY * fadeX;
 
     gl_FragColor = vec4(0.25, 0.88, 0.82,  alpha * fade);

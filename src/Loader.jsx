@@ -4,43 +4,52 @@ import { useProgress } from "@react-three/drei";
 export default function Loader({ started, setStarted, loaded, setLoaded }) {
 	const { progress } = useProgress();
 
+	const [showDiveButton, setShowDiveButton] = useState(false);
+
 	const handleLoaded = () => {
 		setLoaded(true);
+
+		setTimeout(() => {
+			setShowDiveButton(true);
+		}, 6000);
 	};
 
 	const handleStarted = () => {
 		setStarted(true);
 	};
 
+	useEffect(() => {
+		console.log(progress);
+	}, [progress]);
+
 	return (
 		<>
 			{!started && (
-				<div
-					style={{
-						position: "absolute",
-						fontSize: "2rem",
-						textAlign: "center",
-						color: "red",
-						//backgorun dcolor black if not started else white
-						backgroundColor: loaded ? "transparent" : "black",
-						top: 0,
-						left: 0,
-						height: "100vh",
-						width: "100vw",
-						display: "flex",
-						justifyContent: "center",
-						transition: "background-color 1s",
-					}}
-				>
+				// classname active if loaded
+				<div className={`interface ${loaded ? "active" : ""}`}>
 					<div>
-						{progress === 100 && !loaded && (
-							<>
-								<button onClick={handleLoaded}>Click to start</button>
-								{progress}%
-							</>
+						{!loaded && (
+							<div className="loading">
+								<div className="loader">
+									<div
+										className="circle"
+										style={{
+											"--progress": progress / 100,
+										}}
+									>
+										<div className="wave"></div>
+									</div>
+									<div className="progress">{Math.round(progress)}%</div>
+								</div>
+								<button disabled={progress < 100} onClick={handleLoaded}>
+									<span>Enter</span>
+								</button>
+							</div>
 						)}
-						{loaded && (
-							<button onClick={handleStarted}>Dive into the ocean</button>
+						{showDiveButton && (
+							<button className="dive" onClick={handleStarted}>
+								Dive into the ocean
+							</button>
 						)}
 					</div>
 				</div>

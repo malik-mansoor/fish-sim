@@ -8,15 +8,10 @@ class Boid {
 		this._width = 500;
 		this._height = 500;
 		this._depth = 200;
-		this._goal = null;
 		this._neighborhoodRadius = 250;
 		this._maxSpeed = 1;
 		this._maxSteerForce = 0.04;
 		this._avoidWalls = true;
-	}
-
-	setGoal(target) {
-		this._goal = target;
 	}
 
 	setAvoidWalls(value) {
@@ -64,10 +59,6 @@ class Boid {
 	}
 
 	flock(boids, otherBoids) {
-		if (this._goal) {
-			this._acceleration.add(this.reach(this._goal, 0.005));
-		}
-
 		this._acceleration.add(this.alignment(boids));
 		this._acceleration.add(this.cohesion(boids));
 		this._acceleration.add(this.separation(boids.concat(otherBoids)));

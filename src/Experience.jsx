@@ -45,9 +45,11 @@ export default function Experience({ started, loaded }) {
 	useFrame((state, delta) => {
 		camera.updateProjectionMatrix();
 
-		camera.position.x = 0 + Math.sin(state.clock.elapsedTime * 0.25) * 15;
-		camera.position.y = y + Math.sin(state.clock.elapsedTime * 0.5) * 30;
-		camera.position.z = z;
+		if (!debug) {
+			camera.position.x = 0 + Math.sin(state.clock.elapsedTime * 0.25) * 15;
+			camera.position.y = y + Math.sin(state.clock.elapsedTime * 0.5) * 20;
+			camera.position.z = z;
+		}
 
 		if (!hasArrived && started) {
 			const duration = 10; // Total duration in seconds
