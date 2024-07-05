@@ -108,12 +108,13 @@ export default function Fish() {
 	}, []);
 
 	useFrame(({ clock }, delta) => {
+		const effectiveDelta = Math.min(0.1, delta) / 0.008;
+
 		boids.forEach((group, groupIndex) => {
 			group.forEach((boid, i) => {
 				const groupBoids = group;
 				const otherBoids = boids.filter((_, i) => i !== groupIndex).flat();
 
-				const effectiveDelta = Math.min(0.1, delta) / 0.008;
 				boid.run(groupBoids, otherBoids, effectiveDelta);
 
 				uniforms.uTime.value = clock.elapsedTime;

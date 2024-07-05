@@ -30,7 +30,7 @@ class Boid {
 		}
 
 		if (this._avoidWalls) {
-			const scalar = delta * 5 * this._maxSpeed;
+			const scalar = 5 * this._maxSpeed;
 			const vector = new THREE.Vector3();
 			vector.set(-this._width, this.position.y, this.position.z);
 			this._acceleration.add(this.avoid(vector).multiplyScalar(scalar));
@@ -72,7 +72,7 @@ class Boid {
 		this.velocity.clampLength(0, this._maxSpeed);
 
 		// Update position based on velocity
-		this.position.add(this.velocity.multiplyScalar(delta));
+		this.position.add(this.velocity.clone().multiplyScalar(delta));
 
 		// Reset acceleration and local velocity adjustments
 		this._acceleration.set(0, 0, 0);
